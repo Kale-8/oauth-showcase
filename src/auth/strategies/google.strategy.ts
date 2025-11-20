@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy as GoogleOAuthStrategy } from 'passport-google-oauth20';
 import { AuthService } from '../auth.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(GoogleOAuthStrategy, 'google') {
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private configService: ConfigService) {
     super({
       // Credenciales de Google OAuth (desde .env)
-      clientID: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/redirect',
+      clientID: configService.get<string>('GOOGLE_CLIENT_ID', ''),
+      clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET', ''),
+      callbackURL: configService.get<string>(
+        'GOOGLE_CALLBACK_URL',
+        'http://localhost:3000/api/auth/google/redirect',
+      ),
       // Permisos solicitados a Google
       scope: ['email', 'profile'],
     });

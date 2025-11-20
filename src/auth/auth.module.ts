@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -9,12 +10,19 @@ import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
+    ConfigModule,
     // Registra Passport con estrategia por defecto
     PassportModule.register({ defaultStrategy: 'jwt' }),
     // Configura JWT con secret y tiempo de expiración
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'fallback_secret_demo',
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '3600s' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET', 'fallback_secret_demo'),
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN', '3600s'),
+        },
+      }),
     }),
   ],
   // Proveedores: servicio y las 3 estrategias
