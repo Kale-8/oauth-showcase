@@ -1,0 +1,19 @@
+### Archivo de prueba para probar los endpoints
+### Puedes usar este archivo con extensiones como REST Client en VS Code
+
+### 1. Login Local (email y password)
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "demo@test.com",
+  "password": "demo123"
+}
+
+### 2. Obtener perfil (requiere token del paso anterior)
+GET http://localhost:3000/api/auth/profile
+Authorization: Bearer <pega_aqui_el_access_token_del_paso_1>
+
+### 3. Iniciar OAuth con Google (abrir en navegador)
+# GET http://localhost:3000/api/auth/google
+
